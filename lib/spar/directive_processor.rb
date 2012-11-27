@@ -7,7 +7,7 @@ module Spar
     def evaluate(context, locals, &block)
       @result = data
       
-      process_methods
+      process_methods if context.content_type == "text/html"
 
       @result
     end
