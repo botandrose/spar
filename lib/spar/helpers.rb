@@ -22,6 +22,16 @@ module Spar
 
     end
 
+    def partial path
+      segments = path.split("/")
+      segments[-1] = "_#{segments[-1]}.html" # assume html content-type and leading underscore
+      segments.unshift(".") # force relative path
+      partial_path = self.resolve(segments.join("/")).to_s # resolve path with sprockets lookup context
+
+      template = Tilt.new(partial_path)
+      template.render
+    end
+
     def path_to(asset_name, options={})
       asset_name = asset_name.logical_path if asset_name.respond_to?(:logical_path)
       path = Helpers.paths.compute_public_path(asset_name, options.merge(:body => true))
