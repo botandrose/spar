@@ -33,6 +33,7 @@ module Spar
     end
 
     def path_to(asset_name, options={})
+      options[:relative] = Spar.settings["relative"] if options[:relative].nil?
       asset_name = asset_name.logical_path if asset_name.respond_to?(:logical_path)
       path = Helpers.paths.compute_public_path(asset_name, options.merge(:body => true))
       options[:body] ? "#{path}?body=1" : path
@@ -119,6 +120,7 @@ module Spar
 
         source = rewrite_extension(source, options[:ext]) if options[:ext]
         source = rewrite_asset_path(source, options)
+        source = rewrite_to_relative(source) if options[:relative]
         source = rewrite_host_and_protocol(source, options[:protocol])
         source
       end
@@ -142,6 +144,10 @@ module Spar
           source = "/#{source}" unless source =~ /^\//
           source
         end
+      end
+
+      def rewrite_to_relative(source)
+        source.sub(/^\//, "") # drop leading slash
       end
 
       def rewrite_extension(source, ext)
